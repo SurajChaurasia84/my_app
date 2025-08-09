@@ -39,7 +39,7 @@ jobs:
           ln -s $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin tools/bin
 
           # Install Android packages
-          yes | tools/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
+          yes | cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk \
             "platform-tools" \
             "platforms;android-34" \
             "build-tools;34.0.0" \

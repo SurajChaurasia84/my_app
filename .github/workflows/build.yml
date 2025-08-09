@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:
 
 jobs:
   build-apk:
@@ -45,43 +45,39 @@ jobs:
             python3-setuptools \
             curl
 
-      - name: 🛠 Install Android SDK and Build Tools
-        run: |
-          # Install Android SDK using sdkmanager
-          curl -s https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -o commandlinetools.zip
-          unzip commandlinetools.zip -d android-sdk
-          rm commandlinetools.zip
-
-          # Move extracted files to the proper directory structure
-          mkdir -p android-sdk/cmdline-tools
-          mv android-sdk/tools android-sdk/cmdline-tools/latest
-
-          # Accept licenses more reliably using sdkmanager with a specific path
-          yes | android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-
-          # Install the necessary SDK components including Build Tools, Platform Tools, and Android APIs
-          android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
-
-          # Verify installation of build tools and AIDL
-          ls -l android-sdk/build-tools/34.0.0
-
-      - name: 📦 Install Python & Buildozer dependencies
+      - name: 📦 Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install Cython wheel setuptools
           pip install buildozer
 
-      - name: 🛠 Prepare buildozer
+      - name: 🛠 Prepare buildozer.spec
         run: |
           if [ ! -f buildozer.spec ]; then
             buildozer init
           fi
 
-      - name: 🔧 Build APK
+      - name: 🔧 Buildozer Android debug build (first run to download SDK)
+        run: |
+          buildozer android debug || true
+
+      - name: 📦 Install Android SDK components into Buildozer SDK path
+        run: |
+          export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          
+          # If sdkmanager isn't in cmdline-tools, use the fallback in tools
+          if [ ! -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            export PATH="$ANDROID_HOME/tools/bin:$PATH"
+          fi
+
+          yes | sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+
+      - name: 🔨 Build APK (final)
         run: |
           buildozer android debug
 
-      - name: 📤 Upload APK Artifact
+      - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: youtube-downloader-apk

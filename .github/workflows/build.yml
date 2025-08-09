@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch:  # manual trigger
 
 jobs:
   build-apk:
@@ -42,7 +42,21 @@ jobs:
             git \
             openjdk-17-jdk \
             python3-pip \
-            python3-setuptools
+            python3-setuptools \
+            curl
+
+      - name: 🛠 Install Android SDK and Build Tools
+        run: |
+          # Install Android SDK using sdkmanager
+          curl -s https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -o commandlinetools.zip
+          unzip commandlinetools.zip -d android-sdk
+          rm commandlinetools.zip
+
+          # Accept licenses
+          yes | android-sdk/tools/bin/sdkmanager --licenses
+
+          # Install essential build tools (including AIDL)
+          android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
 
       - name: 📦 Install Python & Buildozer dependencies
         run: |

@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # manual trigger
+  workflow_dispatch:  # allows manual trigger
 
 jobs:
   build-apk:
@@ -52,7 +52,7 @@ jobs:
           unzip commandlinetools.zip -d android-sdk
           rm commandlinetools.zip
 
-          # Accept licenses
+          # Accept licenses more reliably
           yes | android-sdk/tools/bin/sdkmanager --licenses
 
           # Install essential build tools (including AIDL)

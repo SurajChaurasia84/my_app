@@ -1,57 +1,67 @@
-name: Build APK
+name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # manual trigger
 
 jobs:
-  build:
+  build-apk:
+    name: Build with Buildozer
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: 🧾 Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-pip zip unzip openjdk-17-jdk python3-setuptools \
-            python3-wheel python3-venv git wget libtinfo6 libncurses6
-        pip install --upgrade pip
-        pip install buildozer cython virtualenv
+      - name: 🐍 Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-    - name: Download Android SDK Command-line tools
-      run: |
-        mkdir -p $HOME/android-sdk
-        cd $HOME/android-sdk
-        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-        unzip cmdline-tools.zip -d cmdline-tools
-        mkdir -p cmdline-tools/latest
-        mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/
+      - name: ⚙️ Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            ccache \
+            libncurses5 \
+            libstdc++6 \
+            libffi-dev \
+            libssl-dev \
+            libsqlite3-dev \
+            zlib1g-dev \
+            libncursesw5-dev \
+            libreadline-dev \
+            libgdbm-dev \
+            libbz2-dev \
+            liblzma-dev \
+            zip \
+            unzip \
+            git \
+            openjdk-17-jdk \
+            python3-pip \
+            python3-setuptools
 
-    - name: Set environment variables
-      run: |
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+      - name: 🧪 Upgrade pip and install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install Cython setuptools wheel buildozer
 
-    - name: Install Android SDK packages
-      run: |
-        yes | sdkmanager --sdk_root=$HOME/android-sdk --licenses
-        sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+      - name: 🛠 Initialize buildozer (if needed)
+        run: |
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
 
-    - name: Add AIDL to PATH
-      run: |
-        echo "$HOME/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
-        echo "Checking if AIDL exists..."
-        ls -l $HOME/android-sdk/build-tools/33.0.2/aidl || echo "AIDL still missing!"
+      - name: 🔧 Build the APK
+        run: |
+          buildozer android debug
 
-    - name: Build APK
-      run: |
-        buildozer android debug
-
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: my-app
-        path: bin/*.apk
+      - name: 📦 Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: youtube-downloader-apk
+          path: bin/*.apk

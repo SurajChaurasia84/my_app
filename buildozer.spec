@@ -1,46 +1,94 @@
 [app]
+
 # (str) Title of your application
-title = YouTubeDownloader
+title = YouTube Downloader
 
 # (str) Package name
-package.name = ytdownloader
+package.name = youtube_downloader
 
-# (str) Package domain (reverse-domain style)
+# (str) Package domain (used for namespace)
 package.domain = org.example
 
-# (str) Source code where the main.py is located
-source.dir = .
+# (str) Source code file (main entry point)
+source.main = main.py
 
-# (list) Source files to include (extensions)
-source.include_exts = py,kv,png,jpg,atlas,ttf
-
-# (str) Application versioning
-version = 0.1
-
-# (str) The main .py file to use as entry point
-# default is main.py, which we use
-entrypoint = main.py
-
-# (str) Supported orientations: landscape, portrait or all
-orientation = portrait
-
-# (str) Requirements
-requirements = python3,kivy==2.3.1,kivymd==1.2.0,yt_dlp
+# (list) Source files to include (relative to your .spec)
+source.include_exts = py,kv,png,jpg,atlas
 
 # (list) Permissions
 android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
-# (int) Min API to target (you may change)
+# (bool) Android: request legacy external storage access (for Android 10+)
+android.use_legacy_storage = 1
+
+# (str) Supported orientation (portrait|landscape|all)
+orientation = portrait
+
+# (list) Application requirements
+# These must match PyPI package names.
+requirements = python3,kivy,kivymd,yt-dlp
+
+# (str) Presplash screen image (optional)
+# presplash.filename = %(source.dir)s/data/presplash.png
+
+# (str) Icon of the application
+# icon.filename = %(source.dir)s/data/icon.png
+
+# (str) Supported Android API
+android.api = 33
+
+# (str) Minimum API your APK supports
 android.minapi = 21
-android.sdk = 31
-android.ndk = 23b
 
-# (str) Application icon (optional)
-# icon.filename = %(source.dir)s/assets/icon.png
+# (str) Target API your APK supports
+android.target = 33
 
-# (bool) Add a presplash
-# presplash.filename = %(source.dir)s/assets/presplash.png
+# (bool) Enable AndroidX
+android.enable_androidx = 1
 
-# Buildozer behavior
+# (bool) Package as an APK
+android.packaging = apk
+
+# (bool) Include SQLite3
+sqlite3 = true
+
+# (bool) Include kivy GLSurfaceView
+android.opengl_es2 = True
+
+# (bool) Fullscreen
+fullscreen = 0
+
+# (bool) Hide the statusbar
+android.hide_statusbar = 0
+
+# (str) Entry point
+entrypoint = main.py
+
+# (str) Directory where the .apk will be placed
+dist.dir = bin
+
+# (bool) Copy library instead of symlink
+copy_libs = 1
+
+
+[buildozer]
+
+# (str) Log level (1 = error, 2 = warn, 3 = info, 4 = debug, 5 = trace)
 log_level = 2
-warn_on_root = 1
+
+# (bool) Whether to clean up on rebuild
+# Set to 1 to force fresh builds during CI
+rebuild = 0
+
+# (str) Build folder (default = .buildozer)
+build_dir = .buildozer
+
+# (str) Output directory
+bin_dir = bin
+
+# (bool) Enable verbose output
+verbose = 1
+
+# (str) Custom build command line (useful for CI/CD)
+# command = buildozer android debug
+

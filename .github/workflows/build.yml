@@ -65,16 +65,16 @@ jobs:
         run: |
           export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-          
-          # If sdkmanager isn't in cmdline-tools, use the fallback in tools
+
+          # Check if sdkmanager is available in cmdline-tools
           if [ ! -f "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
             export PATH="$ANDROID_HOME/tools/bin:$PATH"
           fi
 
-          # Accept licenses interactively instead of using 'yes' command
+          # Accept licenses interactively
           sdkmanager --licenses
 
-          # Install platform and build-tools components
+          # Install the required platform and build-tools
           sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
 
       - name: 🔨 Build APK (final)

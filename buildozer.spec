@@ -31,7 +31,7 @@ android.use_legacy_storage = 1
 orientation = portrait
 
 # (list) Python packages required (PyPI names)
-requirements = python3,kivy,kivymd,yt-dlp
+requirements = python3,kivy==2.3.0,kivymd==1.2.0,yt-dlp==2024.06.16,setuptools,Cython,wheel
 
 # (bool) Use AndroidX libraries (recommended)
 android.enable_androidx = 1

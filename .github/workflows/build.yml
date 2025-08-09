@@ -33,7 +33,7 @@ jobs:
     - name: Set environment variables
       run: |
         echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/33.0.2:$PATH" >> $GITHUB_ENV
+        echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
     - name: Install Android SDK packages
       run: |
@@ -41,7 +41,15 @@ jobs:
         sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" \
                    "platforms;android-33" \
                    "platforms;android-30" \
-                   "build-tools;33.0.2"
+                   "build-tools;33.0.2" \
+                   "build-tools;30.0.3"
+
+    - name: Add aidl to PATH
+      run: |
+        echo "$ANDROID_HOME/build-tools/30.0.3" >> $GITHUB_PATH
+        echo "$ANDROID_HOME/build-tools/33.0.2" >> $GITHUB_PATH
+        which aidl || echo "AIDL not found!"
+        aidl --version || echo "Cannot run aidl"
 
     - name: Build APK
       run: |

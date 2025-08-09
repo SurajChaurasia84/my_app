@@ -7,10 +7,6 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_HOME: ${{ github.workspace }}/android-sdk
-      PATH: ${{ github.workspace }}/android-sdk/cmdline-tools/latest/bin:${{ github.workspace }}/android-sdk/platform-tools:${PATH}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,21 +24,20 @@ jobs:
 
       - name: Install Android SDK Command-line Tools
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           mkdir -p "$ANDROID_HOME/cmdline-tools"
           cd "$ANDROID_HOME/cmdline-tools"
-          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-latest.zip
-          unzip commandlinetools.zip -d latest
-          rm commandlinetools.zip
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-
-      - name: Verify sdkmanager installation
-        run: |
-          which sdkmanager || echo "sdkmanager not in PATH"
-          sdkmanager --list | head -20
+          curl -o cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-latest.zip
+          unzip cmdtools.zip -d latest
+          rm cmdtools.zip
+          yes | sdkmanager --licenses
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build APK
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           buildozer android debug
 
       - name: Upload APK artifact

@@ -42,9 +42,9 @@ jobs:
 
     - name: Add AIDL to PATH
       run: |
-        echo "$HOME/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
+        echo "$HOME/runner/android-sdk/build-tools/33.0.2" >> $GITHUB_PATH
         echo "Checking if AIDL exists..."
-        ls -l $HOME/android-sdk/build-tools/33.0.2/aidl || echo "AIDL still missing!"
+        ls -l $HOME/runner/android-sdk/build-tools/33.0.2/aidl || echo "AIDL still missing!"
 
     - name: Build APK
       run: |

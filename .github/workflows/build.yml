@@ -52,11 +52,14 @@ jobs:
           unzip commandlinetools.zip -d android-sdk
           rm commandlinetools.zip
 
-          # Accept licenses more reliably
-          yes | android-sdk/tools/bin/sdkmanager --licenses
+          # Accept licenses more reliably using sdkmanager with a specific path
+          yes | android-sdk/cmdline-tools/bin/sdkmanager --licenses
 
-          # Install essential build tools (including AIDL)
-          android-sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+          # Install the necessary SDK components including Build Tools, Platform Tools, and Android APIs
+          android-sdk/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;34.0.0"
+
+          # Verify installation of build tools and AIDL
+          ls -l android-sdk/build-tools/34.0.0
 
       - name: 📦 Install Python & Buildozer dependencies
         run: |
